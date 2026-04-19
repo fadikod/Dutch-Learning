@@ -4,12 +4,13 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { RealConversation } from '@/lib/realConversations'
 import { useSpeechSynthesis } from '@/hooks/useSpeechSynthesis'
 import ExpressionsPanel from './ExpressionsPanel'
+import VoicePicker from './VoicePicker'
 
 export default function ConversationPlayer({ conversation }: { conversation: RealConversation }) {
   const [showTranslations, setShowTranslations] = useState(false)
   const [showExpressions, setShowExpressions] = useState(false)
   const [playingIndex, setPlayingIndex] = useState<number | null>(null)
-  const { speak, stop, isSpeaking } = useSpeechSynthesis()
+  const { speak, stop, isSpeaking, voices, selectedVoice, setSelectedVoice } = useSpeechSynthesis()
 
   const handleLineClick = (index: number, text: string) => {
     if (playingIndex === index && isSpeaking) {
@@ -53,16 +54,19 @@ export default function ConversationPlayer({ conversation }: { conversation: Rea
               <p className="text-xs text-slate-400">{conversation.speakers.A} & {conversation.speakers.B}</p>
             </div>
           </div>
-          <button
-            onClick={() => setShowTranslations(!showTranslations)}
-            className={`text-xs font-medium px-3 py-1.5 rounded-lg border transition-colors ${
-              showTranslations
-                ? 'bg-orange-500 text-white border-orange-500'
-                : 'text-slate-500 border-slate-200 hover:border-orange-300'
-            }`}
-          >
-            🇬🇧 Vertaling
-          </button>
+          <div className="flex items-center gap-2">
+            <VoicePicker voices={voices} selectedVoice={selectedVoice} onSelect={setSelectedVoice} />
+            <button
+              onClick={() => setShowTranslations(!showTranslations)}
+              className={`text-xs font-medium px-3 py-1.5 rounded-lg border transition-colors ${
+                showTranslations
+                  ? 'bg-orange-500 text-white border-orange-500'
+                  : 'text-slate-500 border-slate-200 hover:border-orange-300'
+              }`}
+            >
+              🇬🇧 Vertaling
+            </button>
+          </div>
         </div>
         {/* Context */}
         <p className="text-xs text-slate-400 mt-2 italic leading-relaxed">{conversation.context}</p>

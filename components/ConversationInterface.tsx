@@ -7,6 +7,7 @@ import { useSpeechSynthesis } from '@/hooks/useSpeechSynthesis'
 import MessageBubble from './MessageBubble'
 import MicButton from './MicButton'
 import FeedbackPanel from './FeedbackPanel'
+import VoicePicker from './VoicePicker'
 
 interface Message {
   role: 'user' | 'assistant'
@@ -29,7 +30,7 @@ export default function ConversationInterface({ scenario }: { scenario: Scenario
   const [feedback, setFeedback] = useState<Feedback | null>(null)
   const [isFetchingFeedback, setIsFetchingFeedback] = useState(false)
   const bottomRef = useRef<HTMLDivElement>(null)
-  const { isSpeaking, speak, stop } = useSpeechSynthesis()
+  const { isSpeaking, speak, stop, voices, selectedVoice, setSelectedVoice } = useSpeechSynthesis()
 
   // Speak the opening line on mount
   useEffect(() => {
@@ -114,13 +115,16 @@ export default function ConversationInterface({ scenario }: { scenario: Scenario
             <p className="text-xs text-slate-400">{scenario.level} niveau</p>
           </div>
         </div>
-        <button
-          onClick={endConversation}
-          disabled={isFetchingFeedback || messages.filter((m) => m.role === 'user').length === 0}
-          className="text-sm text-slate-500 hover:text-slate-700 disabled:opacity-40 border border-slate-200 rounded-lg px-3 py-1.5 transition-colors"
-        >
-          {isFetchingFeedback ? 'Laden...' : 'Einde gesprek'}
-        </button>
+        <div className="flex items-center gap-2">
+          <VoicePicker voices={voices} selectedVoice={selectedVoice} onSelect={setSelectedVoice} />
+          <button
+            onClick={endConversation}
+            disabled={isFetchingFeedback || messages.filter((m) => m.role === 'user').length === 0}
+            className="text-sm text-slate-500 hover:text-slate-700 disabled:opacity-40 border border-slate-200 rounded-lg px-3 py-1.5 transition-colors"
+          >
+            {isFetchingFeedback ? 'Laden...' : 'Einde gesprek'}
+          </button>
+        </div>
       </div>
 
       {/* Messages */}
